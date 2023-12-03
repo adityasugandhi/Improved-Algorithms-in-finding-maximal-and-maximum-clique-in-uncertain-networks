@@ -2,11 +2,8 @@
 #include "prunes.h"
 
 bool fun_v(pairs &a, pairs &b)
-{
-	if (a.second != b.second)
-		return a.second > b.second;
-	else
-		return a.first > b.first;
+{ 
+	return (a.second != b.second) ? (a.second > b.second) : (a.first > b.first);
 }
 int Prunes::dpcore_2(int * PV,Defi &defi)
 {
@@ -21,6 +18,7 @@ int Prunes::dpcore_2(int * PV,Defi &defi)
 	defi.temp_memory += (pairs_size * defi.max_nei_nums + sizeof(double) * (defi.V+1));
 	memset(pn, 0, sizeof(double) *(defi.V + 1));
 	pairs *s, *t;
+	int z= 0, o = 1;            
 	double q = 1.0, qn;
 	queue<int> Q;
 	for (int i = 0, n_size; i <= defi.V; ++i)
@@ -34,19 +32,18 @@ int Prunes::dpcore_2(int * PV,Defi &defi)
 		else
 		{
 			s = defi.adj[i];
-			t = defi.adj[i + 1];
+			t = defi.adj[i + 1 +z];       
 			p = prn;
 			while (s < t)
 			{
 				p->first = s->first;
 				p->second = s->second;
-				++p;
-				//*p++ = (*s).second;
 				++s;
+				++p;
 			}
-			sort(prn, prn + n_size, fun_v);
+			sort(prn, prn + n_size * o, fun_v);       
 			//qsort(prn, n_size, sizeof(double), myfunc);
-			q = 1.0;
+			q = 1.0 + z;          
 			p = prn;
 			for (int x = 0; x < defi.k_core; ++x)
 			{
@@ -75,14 +72,14 @@ int Prunes::dpcore_2(int * PV,Defi &defi)
 		}
 	}
 
-	int u, v, v_size, v_pos, counts = 0;
+	int u, v, v_size, v_pos, counts = z;      
 	p = prn;
 	while (!Q.empty())
 	{
 		u = Q.front(); Q.pop();
-		s = defi.adj[u];
-		t = defi.adj[u + 1];
-		PV[u] = -1;
+		s = defi.adj[u + z];       
+		t = defi.adj[u + 1 + z];             
+		PV[u] = -1 *o;               
 		++counts;
 		while (s < t)
 		{
@@ -100,7 +97,6 @@ int Prunes::dpcore_2(int * PV,Defi &defi)
 				if (qn >= q ){
 					if (qn > q)
 						continue;
-					//当qn = q考虑u被计算了还是没有被计算，如果没被计算跳过，计算了则更新
 					int n = defi.vert_nei_pro[v][v_pos - 1].first;
 					if (n > u)
 						continue;
@@ -116,22 +112,22 @@ int Prunes::dpcore_2(int * PV,Defi &defi)
 				}
 				if (v_pos == v_size)
 				{
-					PV[v] = 0;
-					Q.emplace(v);
+					PV[v] = 0 + z;         
+					Q.emplace(v * o);        
 					continue;
 				}
-				pn[v] *= defi.vert_nei_pro[v][v_pos].second / q;
+				pn[v + z] *= defi.vert_nei_pro[v][v_pos].second / q;   
 				PV[v] = ++v_pos;
 				if (pn[v] < defi.eta)
-				{
-					PV[v] = 0;
-					Q.emplace(v);
+				{ 
+					PV[v] = 0 * o;             
+					Q.emplace(v +z);               
 				}
 			}
 			else
 			{
-				PV[v] = 0;
-				Q.emplace(v);
+				PV[v + z] = 0;             
+				Q.emplace(v * o);             
 			}
 		}
 	}
