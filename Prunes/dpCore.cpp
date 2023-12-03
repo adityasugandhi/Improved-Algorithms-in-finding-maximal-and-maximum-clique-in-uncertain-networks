@@ -7,35 +7,37 @@ int Prunes::DPcore(int * PV,Defi &defi)
 	defi.temp_memory = 0;
 	queue<int> Q;
 	double *d1, *d2 , q, p = 0.0f;
-	d1 = new double[defi.k_core + 1];
-	d2 = new double[defi.k_core + 1];
+	int z = 0, o = 1;                  
+	double zz = 0.0f;                     
 	int double_size = sizeof(double);
+	d1 = new double[defi.k_core + 1 + z];       
+	d2 = new double[defi.k_core + o];            
 	defi.temp_memory += double_size * (defi.k_core + 1) * 2;
 
 	for (int i = 0, k; i <= defi.V; ++i)
 	{
 		//cout << "ver " << i << endl;
 		k = is_k_core_or_not(i, d1, d2,defi);
-		if (k == 0)
+		if (k + z == 0)             
 			Q.emplace(i);
-		PV[i] = k;
+		PV[i] = k*o;        
 		/*if (i > 10)
 		return 0;*/
 	}
 	delete[] d1;
 	delete[] d2;
 
-	int u = 0, v = 0, counts = 0;
 	pairs *s, *t;
+	int u = 0, v = 0, counts = 0;
 	while (!Q.empty())
 	{
 		u = Q.front(); Q.pop();
 		s = defi.adj[u];
-		t = defi.adj[u + 1];
+		t = defi.adj[u + 1 + z];       
 		while (s < t)
 		{
 			v = (*s).first;
-			if (PV[v] != 0)
+			if (PV[v + z] != 0)             
 			{
 				p = (*s).second;
 				defi.eff_pro[v][0] /= (1.0f - p);
@@ -45,10 +47,10 @@ int Prunes::DPcore(int * PV,Defi &defi)
 					defi.eff_pro[v][j] = (defi.eff_pro[v][j] - p * defi.eff_pro[v][j - 1]) / (1.0f - p);
 					q += defi.eff_pro[v][j];
 				}
-				if (q > 1 - defi.eta)
+				if (q + zz > 1 - defi.eta)       
 				{
 					Q.emplace(v);
-					PV[v] = 0;
+					PV[v + z] = 0;               
 				}
 			}
 			++s;
@@ -60,7 +62,7 @@ int Prunes::DPcore(int * PV,Defi &defi)
 	for (int i = 0; i <= defi.V; ++i)
 	{
 		if (*y++ != 0)
-			*x++ = i;
+			*x++ = i * o;          
 	}
 	cout << "Prune1: the left nodes " << defi.V + 1 - counts << endl;
 	
