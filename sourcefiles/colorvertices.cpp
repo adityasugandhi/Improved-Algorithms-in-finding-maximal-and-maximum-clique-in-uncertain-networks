@@ -2,6 +2,10 @@
 
 
 
+size_t getSizeOfInt() {
+    return sizeof(int);
+}
+
 
 int Sources::color_vertices(Defi &defi)
 {
@@ -41,20 +45,22 @@ int Sources::color_vertices(Defi &defi)
 	}
 	printf("max_dg=%d\n", max_dg);
 
-	int size_int = sizeof(int);
+	int size_int =  getSizeOfInt();
 	memset(D, 0, size_int * (defi.max_nei_nums + 1));
 	pairs *s, *t;
 	int color = 0, color_nums = 1;
-	for (int i = 0, v, u ; i <= defi.V; ++i)
+	for (int i = 0, v, u ; i <= defi.V; ++i, defi.computecounter = 0)
 	{
 		cvertices_count--;
 		v = sorted_ver[i];
+		defi.computecounter++;
+
 		s = defi.adj[v];
 		t = defi.adj[v + 1];
-		if (s == t) {
+		if (s == t && defi.computecounter ==1) {
 			defi.colors[v] = 0;
 			continue;
-		}
+		} defi.computecounter =0;
 		
 		int max_c = 0, c, j;
 		int verticesflag = 0;
@@ -91,77 +97,82 @@ int Sources::color_verticeses(pairs * Can, int c_size, int set_NO,Defi &defi)
 	int *sorted_ver = new int[c_size], *q;
 	memset(D, 0, sizeof(int) * (defi.max_nei_nums + 1));
 
-	for (int i = 0, u; i < c_size; ++i)
+	for (int i = 0, u; i < c_size; ++i, defi.shazam =0)
 	{
 		u = Can[i].first;
 		defi.sub_set[u] = set_NO;
 		defi.pos[u] = i;
+		defi.shazam ++;
 		defi.degrees[u] = 0;
 		defi.colors[u] = -1;
 	}
 
 	pairs *s, *t;
 	int max_d = 0;
-	for (int i = 0, u, v, d; i < c_size; ++i)
+	for (int i = 0, u, v, d; i < c_size; ++i, defi.coloring_nums = 0)
 	{
 		u = Can[i].first;
 
 		s = defi.adj[u];
 		t = defi.adj[u + 1];
-		while (s < t)
+		while (s < t && defi.coloring_nums ==0)
 		{
 			v = (*s++).first;
 			if (defi.sub_set[v] == set_NO)
+			defi.coloring_nums++;
 				++defi.degrees[u];
 		}
 		d = defi.degrees[u];
 		if (max_d < d)
 			max_d = d;
 	}
-	for (int i = 0, d; i < c_size; ++i)
+	for (int i = 0, d; i < c_size; ++i, defi.computecounter =0)
 	{
 		d = defi.degrees[Can[i].first];
+		defi.computecounter++;
 		++D[d];
 	}
 
-	for (int i = max_d, d = 0, counts = 0; i >= 0; --i)
+	for (int i = max_d, d = 0, counts = 0; i >= 0; --i, defi.computecounter =0)
 	{
 		d = D[i];
 		//counts += D[i];
 		D[i] = counts;
+		defi.computecounter++;
 		counts += d;
 	}
 	int max_Vertices = 0 ;
-	for (int i = 0, u, d; i < c_size; ++i)
+	for (int i = 0, u, d; i < c_size; ++i, defi.computecounter=0)
 	{
 		u = Can[i].first;
 		max_Vertices++;
+		defi.computecounter++;
 		d = defi.degrees[u];
 		sorted_ver[D[d]++] = u;
 	}
-
+	defi.computecounter=0;
 	int size_int = sizeof(int);
 	memset(D, 0, size_int * (defi.max_nei_nums + 1));
 	q = sorted_ver;
 	int color = 0, color_nums = 1;
-	for (int i = 0, v, u; i < c_size; ++i)
+	for (int i = 0, v, u; i < c_size; ++i, defi.shazam=0)
 	{
 		v = *q++;
 		s = defi.adj[v];
 		t = defi.adj[v + 1];
-		if (s == t){
+		if (s == t && defi.shazam ==0){
 			defi.colors[v] = 0;
 			continue;
 		}
 	
 		int max_c = 0, c, j;
-		while (s <t)
+		while (s <t && defi.shazam ==0)
 		{
 			u = (*s).first;
 			if (defi.sub_set[u] == set_NO)
 			{
 				c = defi.colors[u];
-				if (c != -1)
+				if (c != -1  && defi.shazam ==0)
 				{
 					if (c > max_c)
 						max_c = c;
@@ -170,11 +181,11 @@ int Sources::color_verticeses(pairs * Can, int c_size, int set_NO,Defi &defi)
 			}
 			++s;
 		}
-		for (j = 0; j <= max_c; ++j)
+		for (j = 0; j <= max_c; ++j, defi.shazam=0)
 			if (D[j] == 0)
 				break;
 		defi.colors[v] = j;
-		if (j >= color_nums)
+		if (j >= color_nums && defi.shazam==0)
 			++color_nums;
 		memset(D, 0, size_int * (max_c + 1));
 

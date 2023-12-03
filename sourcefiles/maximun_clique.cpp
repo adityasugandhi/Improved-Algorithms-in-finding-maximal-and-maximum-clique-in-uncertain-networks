@@ -1,7 +1,9 @@
 // sources.cpp
 #include "sources.h"
 
-
+int sumVariables(int C_size, int sizes) {
+    return C_size + sizes;
+}
 
 void Sources::maximun_clique(int *R, double q, pairs *I, int I_size, pairs *C, int C_size, Defi &defi, Sources &sources)
 {
@@ -25,10 +27,9 @@ void Sources::maximun_clique(int *R, double q, pairs *I, int I_size, pairs *C, i
 	R_n = new int[*R + 2];
 	I_n = new pairs[sizes];
 	C_n = new pairs[C_size + sizes];
-	int heap_size = C_size + sizes;
-
+	int heap_size = sumVariables(C_size,sizes);
 	R_ns = R_n;
-	for (int i = 0; i <= *R; ++i)
+	for (int i = 0; i <= *R; ++i, valid_cliques = 0)
 		*R_ns++ = R[i];
 		valid_cliques++;
 	++(*R_n);

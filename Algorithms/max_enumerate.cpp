@@ -20,10 +20,11 @@ void Algorithms::general_max_enumerate(int *R, double q, pairs *I, int I_size, p
 	C_n = new pairs[C_size + sizes];
 
 	R_ns = R_n;
-	for (int i = 0; i <= *R; ++i)
+	for (int i = 0; i <= *R; ++i, defi.computecounter =0)
 		*R_ns++ = R[i];
+		defi.computecounter++;
 	++(*R_n);
-
+	defi.computecounter =0;
 	int heap_size = C_size + sizes;
 	defi.temp_memory += sizeof(pairs) * (heap_size + sizes);
 	defi.temp_memory += sizeof(int) * (*R + 2);
@@ -41,8 +42,10 @@ void Algorithms::general_max_enumerate(int *R, double q, pairs *I, int I_size, p
 		u = (*Is).first;
 		r = (*Is).second; ++Is;
 		*R_ns = u;
+		defi.enmmaxerator++;
 		q_n = q * r;
-		if (*R_n + It - Is <= defi.MAX_SIZE)
+		defi.enmmaxerator=0;
+		if (*R_n + It - Is <= defi.MAX_SIZE && defi.enmmaxerator==0)
 			break;
 		In_size = sources.generateI(I, Is, I_size, q_n, u, I_n,defi);
 		if (*R_n + In_size <= defi.MAX_SIZE)

@@ -14,6 +14,7 @@
 #include <queue>
 #include <stack>
 #include <map>
+#include <chrono>
 
 #include <stdio.h>
 #include <string.h>
@@ -29,6 +30,35 @@ class Compute{
         //void read_graph(const char *str, Defi &defi);
         void init_parameters(int prunes, Defi &defi);
         void compute(int k, double p, int alg, int prunes, Defi &defi, Sources &sources, Prunes &pruns, Algorithms &algs);
+};
+
+
+class Timer {
+public:
+    void start() {
+        start_time = std::chrono::system_clock::now();
+    }
+
+    void stop() {
+        end_time = std::chrono::system_clock::now();
+    }
+
+    double elapsedMilliseconds() const {
+        std::chrono::duration<double, std::milli> duration = end_time - start_time;
+        return duration.count();
+    }
+
+    std::chrono::system_clock::time_point startTime() const {
+        return start_time;
+    }
+    std::chrono::system_clock::time_point endTime() const {
+        return end_time;
+    }
+
+
+private:
+    std::chrono::system_clock::time_point start_time;
+    std::chrono::system_clock::time_point end_time;
 };
 
 #endif

@@ -67,6 +67,7 @@ class Defi{
             int enmmaxerator;
             int searchindex;
             int heuristicsindex;
+            int shazam;
 };
 
 #endif

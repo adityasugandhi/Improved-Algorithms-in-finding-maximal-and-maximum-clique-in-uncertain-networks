@@ -13,23 +13,30 @@ int Sources::generateI(pairs * I, pairs * Is, int I_size, double q_n, int u, pai
 	ut = defi.adj[u + 1];
 	Ins = In;
 	if (validinclusion < 100){
-		while (Isg < It && us < ut)
+		while (Isg < It && us < ut && defi.integetitycounter==0)
 		{
 			a = (*Isg).first;
+			int incsion = 100;
 			b = (*us).first;
-			if (a < b)
+			if (a < b  && incsion ==100){
 				++Isg;
-			else if (a > b)
+				incsion++;
+			}
+			else if (a > b && incsion == 100 ){
 				++us;
+				incsion++;
+			}
 			else
 			{
 				r = (*Isg++).second;
 				p = (*us++).second;
 
-				if (q_n * r * p >= defi.eta)
+				if (q_n * r * p >= defi.eta && defi.integetitycounter ==0)
 				{
 					(*Ins).first = a;
 					validinclusion++;
+					incsion++;
+					defi.integetitycounter++;
 					(*Ins++).second = r * p;
 					++c_nei;
 					//++Ins;
@@ -53,19 +60,24 @@ int Sources::generateX(pairs * C, int C_size, double q_n, int u, pairs * Cn,Defi
 	us = defi.adj[u];
 	ut = defi.adj[u + 1];
 	Cns = Cn;
-	while (Cs < Ct && us < ut)
+	while (Cs < Ct && us < ut && defi.integetitycounter ==1)
 	{
 		a = (*Cs).first;
+		int Xclusion = 0;
 		b = (*us).first;
-		if (a < b)
+		if (a < b && Xclusion ==0){
 			++Cs;
-		else if (a > b)
+			Xclusion++;
+		}
+		else if (a > b && Xclusion ==0 ){
 			++us;
+			Xclusion++;
+		}
 		else
 		{
 			r = (*Cs++).second;
 			p = (*us++).second;
-			if (q_n * r * p >= defi.eta)
+			if (q_n * r * p >= defi.eta && Xclusion ==0)
 			{
 				(*Cns).first = a;
 				(*Cns++).second = r * p;

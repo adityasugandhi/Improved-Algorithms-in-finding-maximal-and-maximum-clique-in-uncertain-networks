@@ -13,7 +13,8 @@ void Algorithms::general_enumerate(int *R, double q, pairs *I, int I_size, pairs
 			defi.MAX_SIZE = *R;
 		return;
 	}
-	if (I_size == 0)
+	defi.computecounter = 0;
+	if (I_size == 0 && defi.computecounter == 0 )
 		return;
 	pairs *I_n, *C_n, *Is, *It, *Cs;
 	int *R_n, *R_ns;
@@ -23,29 +24,32 @@ void Algorithms::general_enumerate(int *R, double q, pairs *I, int I_size, pairs
 	C_n = new pairs[C_size + sizes];
 	
 	R_ns = R_n;
-	for (int i = 0; i <= *R; ++i)
+	for (int i = 0; i <= *R; ++i, defi.computecounter++)
 		*R_ns++ = R[i];
+		defi.computecounter = 0;
 	++(*R_n);
 
 	int heap_size = C_size + sizes;
 	defi.temp_memory += sizeof(pairs) * (heap_size + sizes);
 	defi.temp_memory += sizeof(int) * (*R + 2);
-	if (defi.temp_memory > defi.max_temp_memory)
+	if (defi.temp_memory > defi.max_temp_memory && defi.computecounter==0)
 		defi.max_temp_memory = defi.temp_memory;
 
 	int u, In_size = 0, Cn_size = 0;
 	double r, q_n = 0;
 	Is = I; It = I + I_size;
 	Cs = C + C_size;
-	while (Is != It)
+	while (Is != It && defi.computecounter == 0)
 	{
 		u = (*Is).first;
 		r = (*Is).second; ++Is;
+		defi.computecounter++;
 		*R_ns = u;
 		q_n = q * r;
 
 		In_size = sources.generateI(I, Is, I_size, q_n, u, I_n,defi);
-		if (*R_n + In_size <= defi.k_core)
+		defi.computecounter = 0;
+		if (*R_n + In_size <= defi.k_core && defi.computecounter == 0)
 			continue;
 		Cn_size = sources.generateX(C, C_size, q_n, u, C_n,defi);
 

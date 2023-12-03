@@ -13,12 +13,13 @@ void Algorithms::general_algorithm_of_cliques(Defi &defi,Sources &sources )
 	defi.temp_memory = 0;
 
 	Is = I;
-	for (int i = 0; i <= defi.V; ++i)
+	for (int i = 0; i <= defi.V; ++i, defi.computecounter=0)
 	{
 		(*Is).first = i;
 		(*Is).second = 1.0f;
+		defi.computecounter++;
 		++Is;
-	}
+	}defi.computecounter =0;
 	int R[1] = { 0 };
 	if (defi.algorithm == 1)
 		general_enumerate(R, 1.0f, I, defi.V + 1, C, 0,defi,sources);

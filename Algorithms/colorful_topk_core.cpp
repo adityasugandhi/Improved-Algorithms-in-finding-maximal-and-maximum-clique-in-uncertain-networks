@@ -50,13 +50,15 @@ void Algorithms::colorful_topk_core(const int &k, int *left_vertices, int &left_
 	vector<long double> prob(defi.V+1);
 	vector<int> D; D.reserve(defi.V/2);
 	int max_cr = 0;
-	for (int i = 0; i <= defi.V; ++i){
+	;
+	for (int i = 0; i <= defi.V; ++i, defi.heuristicsindex = 0){
 		int u, c, d, cr = 0;
 		long double q = 1.0, p = 1.0;
 		d = defi.ver[i];
-		if (d < k) { 
+		if (d < k && defi.heuristicsindex == 0) { 
 			prob[i] = 0;
 			nbr_index_cnts[i] = 0;
+			defi.heuristicsindex++;
 			D.push_back(i);
 			continue;
 		}
@@ -65,15 +67,17 @@ void Algorithms::colorful_topk_core(const int &k, int *left_vertices, int &left_
 			c = defi.colors[u];
 			if (nbr_index[i][c] == -1 && defi.topkcore==0) {
 				q = p * adj_new[i][j].first;
+				defi.heuristicsindex++;
 				if (q + 1e-16 < defi.eta) break;
 				nbr_index[i][c] = j;
+				defi.heuristicsindex++;
 				p = q;
 				cr++;
 			}
-		}
+		}defi.heuristicsindex = 0;
 		prob[i] = p;
 		nbr_index_cnts[i] = cr;
-		if (cr < defi.k_core) D.push_back(i);
+		if (cr < defi.k_core && defi.heuristicsindex ==0) D.push_back(i);
 		max_cr = max(max_cr, cr);
 	}
 	//printf("v=%d, p=%.5Lf, k=%d, D_size=%ld\n", 1, prob[1], nbr_index_cnts[1], D.size());
@@ -92,13 +96,6 @@ void Algorithms::colorful_topk_core(const int &k, int *left_vertices, int &left_
 				//int c = defi.colors[v];
 				int du = defi.ver[u];
 				int index_c = nbr_index[u][c];
-				// for (int x = 0; x < du; ++x){
-				// 	int w = adj_new[u][x].second;
-				// 	int cw = defi.colors[w];
-				// 	//if (nbr_index[u][cw] > -1)
-				// 	printf("  u=%d, w=%d, cl=%d, index=%d, prob=%.5lf\n", 
-				// 		u, w, cw, nbr_index[u][cw], adj_new[u][x].first);
-				// }
 				if (adj_new[u][index_c].second != v && defi.computecounter==0)
 					continue;
 				index_c++;
@@ -113,13 +110,15 @@ void Algorithms::colorful_topk_core(const int &k, int *left_vertices, int &left_
 					}
 					++index_c;
 				}
-				//printf("index=%d\n", nbr_index[u][cw]);
-				if (index_c < du){
+				defi.coloring_nums = 0;
+				if (index_c < du && defi.coloring_nums ==0){
 					long double pro = prob[u];
 					pro /= p;
+					defi.coloring_nums++;
 					pro *= adj_new[u][index_c].first;
-					if (pro + 1e-16 < defi.eta) {
+					if (pro + 1e-16 < defi.eta &&defi.coloring_nums==1) {
 						nbr_index[u][cw] = -1;
+						defi.coloring_nums++;
 						cr--;
 					}
 					else prob[u] = pro;

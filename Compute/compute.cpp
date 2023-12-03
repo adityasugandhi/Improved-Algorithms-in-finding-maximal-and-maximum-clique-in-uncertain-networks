@@ -83,163 +83,140 @@ void Compute::init_parameters(int prunes, Defi &defi)
 };
 
 
-void Compute::compute(int k, double p, int alg,int prunes, Defi &defi ,Sources &sources, Prunes &pruns, Algorithms &algs)
-{
-	assert(prunes >= 1 && prunes <= 2);
-	assert(alg >= 1 && alg <= 6);
-	assert(p >= 0 && p <= 1.0);
-	assert(k > 0);
-	defi.k_core = k;
-	defi.eta = p;
-	defi.algorithm = alg;
-	init_parameters(prunes,defi);
+void Compute::compute(int k, double p, int alg, int prunes, Defi &defi, Sources &sources, Prunes &pruns, Algorithms &algs) {
+    assert(prunes >= 1 && prunes <= 2);
+    assert(alg >= 1 && alg <= 6);
+    assert(p >= 0 && p <= 1.0);
+    assert(k > 0);
+    defi.k_core = k;
+    defi.eta = p;
+    defi.algorithm = alg;
+    init_parameters(prunes, defi);
 
-	printf("k=%d, defi.eta=%.4f, alg=%d, prune=%d\n", k, defi.eta, alg, prunes);
+    printf("k=%d, defi.eta=%.4f, alg=%d, prune=%d\n", k, defi.eta, alg, prunes);
 
-	struct timeval start_tm, end_tm, prune_tm;
-	double prune_time;
-	gettimeofday(&start_tm, NULL);
-	int *PV = NULL, pv_size = 0;
-	int R[1] = {0};
-	int *cores = new int[defi.V]();
-	switch (alg) {
-	case 1:
-		algs.general_algorithm_of_cliques(defi,sources);
-		break;
-	case 2:
-		//get_cores();
-		algs.colorful_topk_core(defi.k_core, cores, pv_size,defi,sources);
-		break;
-	case 3:
-		//输出团
-		//outc = fopen("out_cliques.txt", "w");
+    Timer time;
+    time.start();
 
-		PV = new int[defi.V + 2];
-		memset(PV, 0, sizeof(int) * (defi.V + 2));
-		if (prunes == 1)
-			pv_size = pruns.DPcore(PV,defi);
-		else if (prunes == 2)
-			pv_size = pruns.dpcore_2(PV,defi);
-		
-		gettimeofday(&prune_tm, NULL);
-		prune_time = double(prune_tm.tv_sec - start_tm.tv_sec) * 1000.0f + 
-			double(prune_tm.tv_usec - start_tm.tv_usec) / 1000.0f;
-		printf("Prune%d, time\t%.3f ms\n", prunes, prune_time);
+    int *PV = nullptr, pv_size = 0;
+    int R[1] = {0};
+    int *cores = new int[defi.V]();
 
-		sources.free_Dynamic_pointers(defi);
-		gettimeofday(&prune_tm, NULL);
-		defi.max_memory += sizeof(int) * (defi.V+2);
-		if (pv_size != 0 && defi.computecounter==0)
-		{
-			pairs * I, *C, *Is;
-			I = new pairs[pv_size + 2];
-			C = new pairs[pv_size + 2];
-			//memset(I, 0, sizeof(I) * (c_size + 1));
-			memset(C, 0, sizeof(pairs) * (pv_size + 2));
+    double elapsed_seconds, elapsetime, prune_time1, difference_time, enumeration_time, prune_time, elapsedtime;
 
-			Is = I;
-			for (int i = 0; i < pv_size; ++i, defi.computecounter=0)
-			{
-				(*Is).first = PV[i];
-				(*Is).second = 1.0;
-				defi.computecounter++;
-				++Is;
-			}
-			defi.computecounter=0;
-			defi.temp_memory = 0;
-			algs.general_enumerate(R, 1.0, I, pv_size, C, 0,defi,sources);
-			delete[] I;
-			delete[] C;
-			cout << "Maximal clique nums\t" << defi.maximal_cliques << endl;
-			cout << "The maximum clique size\t" << defi.MAX_SIZE << endl;
-		}
-		if (PV != NULL)
-		{
-			delete[] PV;
-			PV = NULL;
-		}
-		gettimeofday(&end_tm, NULL);
-		printf("Enumerating time\t%.3f ms\n", double(end_tm.tv_sec - prune_tm.tv_sec) * 1000.0f + 
-			double(end_tm.tv_usec - prune_tm.tv_usec) / 1000.0f);
-		
-		//fclose(outc);
-		break;
-	case 4:
-		defi.coloring_nums = sources.color_vertices(defi);
-		if (defi.max_clr_p == NULL)
-			defi.max_clr_p = new double[defi.coloring_nums];
-		PV = new int[defi.V + 2];
-		memset(PV, 0, sizeof(int) * (defi.V + 2));
-		if (prunes == 1)
-			pv_size =  pruns.DPcore(PV,defi);
-		else if (prunes == 2)
-			pv_size = pruns.dpcore_2(PV,defi);
-		
-		gettimeofday(&prune_tm, NULL);
-		prune_time = double(prune_tm.tv_sec - start_tm.tv_sec) * 1000.0f + 
-			double(prune_tm.tv_usec - start_tm.tv_usec) / 1000.0f;
-		printf("Prune%d, time\t%.3f ms\n", prunes, prune_time);
+    switch (alg) {
+        case 1:
+            algs.general_algorithm_of_cliques(defi, sources);
+            break;
+        case 2:
+            algs.colorful_topk_core(defi.k_core, cores, pv_size, defi, sources);
+            break;
+        case 3:
+            PV = new int[defi.V + 2];
+            memset(PV, 0, sizeof(int) * (defi.V + 2));
+            if (prunes == 1)
+                pv_size = pruns.DPcore(PV, defi);
+            else if (prunes == 2)
+                pv_size = pruns.dpcore_2(PV, defi);
+            time.stop();
+            prune_time = time.elapsedMilliseconds();
+            printf("Prune%d, time\t%.3f ms\n", prunes, prune_time);
 
-		sources.free_Dynamic_pointers(defi);
-	
-		gettimeofday(&prune_tm, NULL);
-		defi.max_memory += sizeof(int) * (defi.V+2);
+            sources.free_Dynamic_pointers(defi);
 
-		if (pv_size != 0 && defi.computecounter ==0)
-		{
-			pairs * I, *C, *Is;
-			I = new pairs[pv_size + 2];
-			C = new pairs[pv_size + 2];
-			//memset(I, 0, sizeof(pairs) * (defi.V + 1));
-			memset(C, 0, sizeof(pairs) * (pv_size + 2));
+            defi.max_memory += sizeof(int) * (defi.V + 2);
+            if (pv_size != 0) {
+                pairs *I, *C, *Is;
+                I = new pairs[pv_size + 2];
+                C = new pairs[pv_size + 2];
+                memset(C, 0, sizeof(pairs) * (pv_size + 2));
 
-			Is = I;
-			for (int i = 0; i < pv_size; ++i, defi.computecounter=1)
-			{
-				//assert(PV[i] >= 0 && PV[i] <=defi.V);
-				(*Is).first = PV[i];
-				(*Is).second = 1.0f;
-				defi.computecounter++;
-				++Is;
-			}
-			delete[] PV; PV = NULL;
-			defi.temp_memory = 0;
-			defi.MAX_SIZE = defi.k_core;
-			sources.maximun_clique(R, 1.0f, I, pv_size , C, 0,defi,sources);
-			delete[] I;
-			delete[] C;
-			delete[] PV; PV = NULL;
-			defi.computecounter =0;
-		}
-		gettimeofday(&end_tm, NULL);
-		printf("Enumerating time\t%.3f ms\n", double(end_tm.tv_sec - prune_tm.tv_sec) * 1000.0f + 
-			double(end_tm.tv_usec - prune_tm.tv_usec) / 1000.0f);
-		cout << "The maximum clique size\t" << defi.MAX_SIZE << endl;
-		break;
-	case 5:
-		defi.MAX_SIZE = 0;
-		cout << "Max_Pclq" << endl;
-		algs.Max_Pclq(defi,sources);
-		cout << "The maximum clique size\t" << defi.MAX_SIZE << endl;
-		break;
-	case 6:
-		defi.MAX_SIZE = defi.k_core;
-		algs.general_algorithm_of_cliques(defi,sources);
-		cout << "The maximum clique size\t" << defi.MAX_SIZE << endl;
-		break;
-	default:
-		printf("The parameter 'alg' errors! \n");
-		break;
-	}
+                Is = I;
+                for (int i = 0; i < pv_size; ++i , defi.enmmaxerator =0) {
+                    (*Is).first = PV[i];
+					defi.enmmaxerator ++;
+                    (*Is).second = 1.0;
+                    ++Is;
+                }
+				defi.enmmaxerator = 0;
+                defi.temp_memory = 0;
+                algs.general_enumerate(R, 1.0, I, pv_size, C, 0, defi, sources);
+                delete[] I;
+                delete[] C;
+            }
+            delete[] PV;
+            time.stop();
+            enumeration_time = time.elapsedMilliseconds();
+            difference_time = enumeration_time - prune_time;
+            printf("Difference between Enumeration time and Prune time: %.3f ms\n", difference_time);
+            break;
+        case 4:
+            defi.coloring_nums = sources.color_vertices(defi);
+            if (defi.max_clr_p == nullptr)
+                defi.max_clr_p = new double[defi.coloring_nums];
+            PV = new int[defi.V + 2];
+            memset(PV, 0, sizeof(int) * (defi.V + 2));
+            if (prunes == 1)
+                pv_size = pruns.DPcore(PV, defi);
+            else if (prunes == 2)
+                pv_size = pruns.dpcore_2(PV, defi);
 
-	gettimeofday(&end_tm, NULL);
-	printf("Alg %d, time\t%.3f ms\n", alg, double(end_tm.tv_sec - start_tm.tv_sec) * 1000.0f + 
-		double(end_tm.tv_usec - start_tm.tv_usec) / 1000.0f);
+            time.stop();
+            prune_time1 = time.elapsedMilliseconds();
+            elapsetime = time.elapsedMilliseconds();
+            printf("Prune%d, time\t%.3f ms\n", prunes, elapsetime);
 
-	defi.graph_memory /= 1024;
-	defi.max_memory /= 1024;
-	defi.max_temp_memory /= 1024;
-	printf("Graph memory\t%ld kb\n",defi.graph_memory);
-	printf("Max memory\t%ld kb\n", defi.graph_memory + defi.max_memory + defi.max_temp_memory);
+            sources.free_Dynamic_pointers(defi);
+
+            defi.max_memory += sizeof(int) * (defi.V + 2);
+
+            if (pv_size != 0) {
+                pairs *I, *C, *Is;
+                I = new pairs[pv_size + 2];
+                C = new pairs[pv_size + 2];
+                memset(C, 0, sizeof(pairs) * (pv_size + 2));
+
+                Is = I;
+                for (int i = 0; i < pv_size; ++i , defi.heuristicsindex = 0) {
+                    (*Is).first = PV[i];
+                    (*Is).second = 1.0f;
+					defi.heuristicsindex++;
+                    ++Is;
+                }defi.heuristicsindex = 0;
+                defi.temp_memory = 0;
+                defi.MAX_SIZE = defi.k_core;
+                sources.maximun_clique(R, 1.0f, I, pv_size, C, 0, defi, sources);
+                delete[] I;
+                delete[] C;
+                delete[] PV;
+            }
+            time.stop();
+            elapsed_seconds = (time.elapsedMilliseconds() - prune_time1) / 1000.0;
+            printf("Enumerating time\t%.3f s\n", elapsed_seconds);
+            break;
+        case 5:
+            defi.MAX_SIZE = 0;
+            printf("Max_Pclq\n");
+            algs.Max_Pclq(defi, sources);
+            printf("The maximum clique size\t%d\n", defi.MAX_SIZE);
+            break;
+        case 6:
+            defi.MAX_SIZE = defi.k_core;
+            algs.general_algorithm_of_cliques(defi, sources);
+            printf("The maximum clique size\t%d\n", defi.MAX_SIZE);
+            break;
+        default:
+            printf("The parameter 'alg' errors! \n");
+            break;
+    }
+
+    time.stop();
+    elapsedtime = time.elapsedMilliseconds();
+    printf("Alg %d, time\t%.3f ms\n", alg, elapsedtime);
+
+    defi.graph_memory /= 1024;
+    defi.max_memory /= 1024;
+    defi.max_temp_memory /= 1024;
+    printf("Graph memory\t%ld kb\n", defi.graph_memory);
+    printf("Max memory\t%ld kb\n", defi.graph_memory + defi.max_memory + defi.max_temp_memory);
 }
-

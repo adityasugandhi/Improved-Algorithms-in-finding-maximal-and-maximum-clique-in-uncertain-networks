@@ -7,7 +7,7 @@
 #include "../defination.h"
 
 
- 
+
 
 class Sources {
 public:
@@ -28,6 +28,23 @@ public:
     void maximun_clique(int *R, double q, pairs *I, int I_size, pairs *C, int C_size, Defi &defi, Sources &sources);
    
 };
+class Comparator {
+public:
+    virtual bool compare(const double& a, const double& b) const = 0;
+};
+
+class DescendingOrderComparator : public Comparator {
+public:
+    bool compare(const double& a, const double& b) const override {
+        return a > b;
+    }
+};
+
+class MyFunction {
+public:
+    static int compare(const void* a, const void* b, const Comparator& comparator);
+};
+
 extern int myfunc(const void *a,const void *b);
 extern bool myfunc1(double &a, double &b);
 #endif // SOURCES_H
