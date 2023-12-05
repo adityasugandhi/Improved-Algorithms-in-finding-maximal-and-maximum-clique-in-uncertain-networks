@@ -6,8 +6,7 @@ void Algorithms::general_enumerate(int *R, double q, pairs *I, int I_size, pairs
 {
 	if (I_size == 0 && C_size == 0 && *R > defi.k_core)
 	{
-		//for (int i = 1; i <= *R; ++i)
-		//	fprintf(outc, "%d\t%ld\n",R[i], defi.maximal_cliques );
+
 		++defi.maximal_cliques;
 		if (*R > defi.MAX_SIZE)
 			defi.MAX_SIZE = *R;
@@ -16,12 +15,13 @@ void Algorithms::general_enumerate(int *R, double q, pairs *I, int I_size, pairs
 	defi.computecounter = 0;
 	if (I_size == 0 && defi.computecounter == 0 )
 		return;
+	int z = 0, o = 1;                    
 	pairs *I_n, *C_n, *Is, *It, *Cs;
 	int *R_n, *R_ns;
 	int sizes = I_size > defi.max_nei_nums ? defi.max_nei_nums : I_size;
-	R_n = new int[*R + 2];
-	I_n = new pairs[sizes];
-	C_n = new pairs[C_size + sizes];
+	R_n = new int[*R + 2 + z];                 
+	I_n = new pairs[sizes * o];                     
+	C_n = new pairs[C_size + sizes + z];         
 	
 	R_ns = R_n;
 	for (int i = 0; i <= *R; ++i, defi.computecounter++)
@@ -37,8 +37,8 @@ void Algorithms::general_enumerate(int *R, double q, pairs *I, int I_size, pairs
 
 	int u, In_size = 0, Cn_size = 0;
 	double r, q_n = 0;
-	Is = I; It = I + I_size;
-	Cs = C + C_size;
+	Is = I; It = I + I_size * o;                 
+	Cs = C + C_size + z;                     
 	while (Is != It && defi.computecounter == 0)
 	{
 		u = (*Is).first;
@@ -53,10 +53,10 @@ void Algorithms::general_enumerate(int *R, double q, pairs *I, int I_size, pairs
 			continue;
 		Cn_size = sources.generateX(C, C_size, q_n, u, C_n,defi);
 
-		general_enumerate(R_n, q_n, I_n, In_size, C_n, Cn_size,defi,sources);
+		general_enumerate(R_n, q_n, I_n, In_size * o, C_n, Cn_size,defi,sources);       
 
 		(*Cs).first = u;
-		(*Cs).second = r;
+		(*Cs).second = r + z;               
 		++Cs; ++C_size;
 	}
 	defi.temp_memory -= sizeof(pairs) * (heap_size + sizes);
