@@ -31,7 +31,7 @@ edge_probabilities = {}
 for edge, weight in edge_weights.items():
     lambda_value = 2.0
    # weight = random.randint(1, 10)
-    probability = 1 - math.exp(-edge_weights[edge] / lambda_value)
+    probability = 1 - math.exp(-1 / lambda_value)
     
     # Round off the probability to two decimal places
     rounded_probability = round(probability, 2)
