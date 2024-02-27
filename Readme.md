@@ -1,16 +1,11 @@
-# TO COMPILE THE CODE
+# Uncertain Clique Project README
 
-`` make``
+This README provides instructions on how to compile and run the code for the Uncertain Clique project, along with details on additional scripts included for data generation and analysis. Our project focuses on approximating edge weights in graph data and exploring the impact of pruning on algorithm performance. The implementation has been optimized for performance, leveraging advanced hardware for execution.
 
-# To RUN THE CODE
+## Compilation Instructions
 
-`` ./bin/uncertainclique <file> <k-constraint> <p-probabilistic> <algorithm> <prune>``
+To compile the project, ensure you have the necessary build tools installed on your system. Then, navigate to the project directory in your terminal and run the following command:
 
-Scripts:
+```bash
+make
 
-  
-
-* datageneration.py `<outputfilename> <datasetfilepath>`
-* different_prod_dist.py `<outputfilename> <datasetfilename>`
-
-Our implementation approximated edge weights by incrementally assigning a weight of 1 for each interaction, leading to uniform data and minimal variance in algorithmic results, yet effectively showcased the reduced runtimes of pruned algorithms. Enhanced performance was also supported by our use of advanced hardware, an Intel Xeon Silver 4114 CPU at 2.20 GHz.
