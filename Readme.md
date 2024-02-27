@@ -9,3 +9,8 @@ To compile the project, ensure you have the necessary build tools installed on y
 ```bash
 make
 
+## This command will compile the source code and generate an executable file in the ./bin directory.
+
+Running the Project
+
+Once the project is compiled, you can run the main executable with the following command syntax:
