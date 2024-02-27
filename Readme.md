@@ -8,7 +8,6 @@ To compile the project, ensure you have the necessary build tools installed on y
 
 '''bash
 make
-'''bash
 
 This command will compile the source code and generate an executable file in the `./bin` directory.
 
@@ -18,7 +17,6 @@ Once the project is compiled, you can run the main executable with the following
 
 '''bash
 ./bin/uncertainclique <file> <k-constraint> <p-probabilistic> <algorithm> <prune>
-'''bash
 
 ### Command Parameters:
 - `<file>`: Path to the input dataset file.
